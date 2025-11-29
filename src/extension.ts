@@ -41,7 +41,7 @@ export function activate(context: vscode.ExtensionContext) {
         }),
         // 监听配置变化
         vscode.workspace.onDidChangeConfiguration(e => {
-            if (e.affectsConfiguration('superRunner')) validateActiveConfig();
+            if (e.affectsConfiguration('superRunner')) {validateActiveConfig();}
         })
     );
 }
@@ -128,8 +128,8 @@ async function showConfigSelector() {
     });
 
     if (selected) {
-        if (selected.isAddAction) openAddConfigUI();
-        else if (selected.command) vscode.commands.executeCommand(selected.command);
+        if (selected.isAddAction) {openAddConfigUI();}
+        else if (selected.command) {vscode.commands.executeCommand(selected.command);}
         else if (selected.config) {
             activeConfig = selected.config;
             updateStatusBar();
@@ -144,7 +144,7 @@ async function openAddConfigUI() {
     const fileUris = await vscode.window.showOpenDialog({
         canSelectFiles: true, openLabel: 'Select Entry File'
     });
-    if (!fileUris || fileUris.length === 0) return;
+    if (!fileUris || fileUris.length === 0) {return;}
 
     const filePath = fileUris[0].fsPath;
     const workspaceFolder = vscode.workspace.getWorkspaceFolder(fileUris[0]);
@@ -160,10 +160,10 @@ async function openAddConfigUI() {
     let defaultCmd = getExecutorForExt(ext) || "python";
 
     const name = await vscode.window.showInputBox({ value: `Run ${path.basename(filePath)}`, prompt: 'Config Name' });
-    if (!name) return;
+    if (!name) {return;}
 
     const command = await vscode.window.showInputBox({ value: defaultCmd, prompt: 'Executor Command (e.g. python, node, g++)' });
-    if (!command) return;
+    if (!command) {return;}
     
     const args = await vscode.window.showInputBox({ prompt: 'Arguments (optional)', placeHolder: '--debug' });
 
@@ -203,9 +203,9 @@ async function getPythonPath(scopeUri: vscode.Uri | undefined): Promise<string> 
     try {
         const pyExt = vscode.extensions.getExtension('ms-python.python');
         if (pyExt) {
-            if (!pyExt.isActive) await pyExt.activate();
+            if (!pyExt.isActive) {await pyExt.activate();}
             const details = pyExt.exports.settings.getExecutionDetails(scopeUri);
-            if (details?.execCommand?.[0]) return details.execCommand[0];
+            if (details?.execCommand?.[0]) {return details.execCommand[0];}
         }
     } catch {}
     return 'python';
@@ -234,7 +234,7 @@ async function execute(mode: 'run' | 'debug') {
         }
         targetFile = editor.document.fileName;
     } else {
-        if (!activeConfig.program) return;
+        if (!activeConfig.program) {return;}
         targetFile = activeConfig.program.replace(/\$\{workspaceFolder\}/g, workspacePath);
     }
 
