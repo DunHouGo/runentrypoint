@@ -1,0 +1,64 @@
+{
+  "name": "runentrypoint",
+  "displayName": "runEntryPoint",
+  "description": "",
+  "version": "0.0.1",
+  "publisher": "DunHou",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+
+
+  "contributes": {
+    "commands": [
+      { "command": "superRunner.run", "title": "Run", "icon": "$(play)" },
+      { "command": "superRunner.debug", "title": "Debug", "icon": "$(debug-alt)" },
+      { "command": "superRunner.selectConfig", "title": "Select Configuration" },
+      { "command": "superRunner.addConfig", "title": "Add Configuration" },
+      { "command": "superRunner.editConfig", "title": "Edit Settings" }
+    ],
+    "configuration": {
+      "title": "Super Runner",
+      "properties": {
+        "superRunner.clearPreviousOutput": {
+          "type": "boolean",
+          "default": true,
+          "description": "Clear terminal before running."
+        },
+        "superRunner.configurations": {
+          "type": "array",
+          "default": []
+        }
+      }
+    }
+  },
+
+
+
+
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.70.1",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "typescript-eslint": "^8.46.3",
+    "eslint": "^9.39.1",
+    "typescript": "^5.9.3",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2"
+  }
+}
