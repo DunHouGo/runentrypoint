@@ -218,7 +218,6 @@ async function execute(mode: 'run' | 'debug') {
     const editor = vscode.window.activeTextEditor;
     let workspaceFolder: vscode.WorkspaceFolder | undefined;
     
-    // 获取工作区信息
     if (editor) {
         workspaceFolder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
     } else if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
@@ -239,13 +238,13 @@ async function execute(mode: 'run' | 'debug') {
         targetFile = activeConfig.program.replace(/\$\{workspaceFolder\}/g, workspacePath);
     }
 
-    // 2. 如果是 Debug 模式
+    // 2. Debug 模式直接进入调试逻辑
     if (mode === 'debug') {
         startDebugging(targetFile, workspaceFolder, activeConfig.args);
         return;
     }
 
-    // 3. 如果是 Run 模式
+    // 3. Run 模式：解析执行器
     let executor = activeConfig.command;
     
     // 如果没有指定具体命令（Current File 模式），尝试根据后缀获取
@@ -253,7 +252,7 @@ async function execute(mode: 'run' | 'debug') {
         const ext = path.extname(targetFile);
         executor = getExecutorForExt(ext);
         
-        // --- 修复点：如果没有找到执行器，直接报错并返回，不要去跑 echo ---
+        // 如果找不到执行器（比如你在看 .json 或 .md 文件），报错并停止
         if (!executor) {
             vscode.window.showErrorMessage(`No executor found for file extension '${ext}'. Please configure it in settings.`);
             return; 
@@ -270,7 +269,7 @@ async function execute(mode: 'run' | 'debug') {
     
     // 4. 构建最终命令
     if (executor && executor.includes("$")) {
-        // 复杂命令模式 (模拟 Code Runner，如 C++/Java)
+        // 复杂命令模式
         const dir = path.dirname(targetFile);
         const fileName = path.basename(targetFile);
         const fileNameNoExt = path.parse(targetFile).name;
@@ -281,13 +280,12 @@ async function execute(mode: 'run' | 'debug') {
             .replace(/\$fileNameWithoutExt/g, fileNameNoExt)
             .replace(/\$fileName/g, fileName);
     } else {
-        // 简单命令模式: cmd + file + args
-        // 修复点：优化引号逻辑，确保 PowerShell 兼容性
+        // 简单命令模式
         const quote = (s: string) => s.includes(' ') ? `"${s}"` : s;
         finalCommand = `${quote(executor || "")} ${quote(targetFile)} ${args}`;
     }
 
-    // 5. 发送到终端
+    // 5. 发送到终端 (修复白屏和命令断裂问题的关键部分)
     if (!activeTerminal || activeTerminal.exitStatus) {
         activeTerminal = vscode.window.createTerminal("Super Runner");
     }
@@ -295,11 +293,21 @@ async function execute(mode: 'run' | 'debug') {
     
     // 检查设置：是否清屏
     const shouldClear = vscode.workspace.getConfiguration('superRunner').get('clearPreviousOutput');
+    
     if (shouldClear) {
-        vscode.commands.executeCommand('workbench.action.terminal.clear'); 
+        try {
+            // 执行清屏
+            await vscode.commands.executeCommand('workbench.action.terminal.clear');
+            
+            // --- 关键修复：等待 200ms 让终端喘口气 ---
+            await new Promise(resolve => setTimeout(resolve, 200)); 
+        } catch (e) {
+            // 忽略清屏错误
+        }
     }
 
-    activeTerminal.sendText(finalCommand);
+    // 发送文本 (addNewLine: true)
+    activeTerminal.sendText(finalCommand, true);
 }
 
 /**

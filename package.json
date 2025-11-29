@@ -4,6 +4,7 @@
   "description": "",
   "version": "0.0.1",
   "publisher": "DunHou",
+  "icon": "runEntryPoint.png",
   "engines": {
     "vscode": "^1.70.0"
   },
@@ -18,21 +19,21 @@
 
   "contributes": {
     "commands": [
-      { "command": "superRunner.run", "title": "Run", "icon": "$(play)" },
-      { "command": "superRunner.debug", "title": "Debug", "icon": "$(debug-alt)" },
-      { "command": "superRunner.selectConfig", "title": "Select Configuration" },
-      { "command": "superRunner.addConfig", "title": "Add Configuration" },
-      { "command": "superRunner.editConfig", "title": "Edit Settings" }
+      { "command": "runEntryPoint.run", "title": "Run", "icon": "$(play)" },
+      { "command": "runEntryPoint.debug", "title": "Debug", "icon": "$(debug-alt)" },
+      { "command": "runEntryPoint.selectConfig", "title": "Select Configuration" },
+      { "command": "runEntryPoint.addConfig", "title": "Add Configuration" },
+      { "command": "runEntryPoint.editConfig", "title": "Edit Settings" }
     ],
     "configuration": {
       "title": "Super Runner",
       "properties": {
-        "superRunner.clearPreviousOutput": {
+        "runEntryPoint.clearPreviousOutput": {
           "type": "boolean",
           "default": true,
           "description": "Clear terminal before running."
         },
-        "superRunner.configurations": {
+        "runEntryPoint.configurations": {
           "type": "array",
           "default": []
         }
@@ -55,10 +56,6 @@
     "@types/vscode": "^1.70.1",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
-    "typescript-eslint": "^8.46.3",
-    "eslint": "^9.39.1",
-    "typescript": "^5.9.3",
-    "@vscode/test-cli": "^0.0.12",
-    "@vscode/test-electron": "^2.5.2"
+    "typescript": "^5.9.3"
   }
 }
