@@ -15,7 +15,10 @@
     "onStartupFinished"
   ],
   "main": "./out/extension.js",
-
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DunHouGo/runentrypoint.git"
+  },
 
   "contributes": {
     "commands": [
