@@ -2,7 +2,13 @@
 
 Run your entry point in status bar, similar to the way you run your entry point in Pycharm.
 
+
+## Show in Status Bar
 ![show in status bar](<img/staus bar.jpg>)
+
+## Popup
+![popup](img/popup.jpg)
+
 ## Features
 
 - Select your entry point or current file in profile.
