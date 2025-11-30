@@ -4,7 +4,7 @@ Run your entry point in status bar, similar to the way you run your entry point 
 
 
 ## Show in Status Bar
-![show in status bar](<img/staus bar.jpg>)
+![show in status bar](<img/stausbar.jpg>)
 
 ## Popup
 ![popup](img/popup.jpg)
@@ -20,6 +20,12 @@ Run your entry point in status bar, similar to the way you run your entry point 
 ### 0.0.1
 
 Initial release
+
+### 0.0.2
+
+- fix PowerShell compatibility on Windows
+- add images in README.md
+- fix the package size issue(only include necessary files)
 
 ---
 

@@ -207,7 +207,7 @@ async function execute(mode: 'run' | 'debug') {
     }
     const workspacePath = workspaceFolder ? workspaceFolder.uri.fsPath : "";
 
-    // path
+    // 目标文件路径
     let targetFile = "";
     if (activeConfig.type === 'current') {
         if (!editor) {
@@ -220,28 +220,24 @@ async function execute(mode: 'run' | 'debug') {
         targetFile = activeConfig.program.replace(/\$\{workspaceFolder\}/g, workspacePath);
     }
 
-    // debug
+    // Debug
     if (mode === 'debug') {
         startDebugging(targetFile, workspaceFolder, activeConfig.args);
         return;
     }
 
-    // run
+    // Run
     let executor = activeConfig.command;
     
-    // read ext
     if (!executor && activeConfig.type === 'current') {
         const ext = path.extname(targetFile);
         executor = getExecutorForExt(ext);
-        
-        // error
         if (!executor) {
             vscode.window.showErrorMessage(`No executor found for file extension '${ext}'. Please configure it in settings.`);
             return; 
         }
     }
 
-    // py path
     if (executor?.trim() === 'python' || executor?.trim() === 'python3') {
         executor = await getPythonPath(workspaceFolder?.uri);
     }
@@ -249,8 +245,9 @@ async function execute(mode: 'run' | 'debug') {
     const args = activeConfig.args || "";
     let finalCommand = "";
     
-    // c,d
+    // 构建命令
     if (executor && executor.includes("$")) {
+        // Code Runner
         const dir = path.dirname(targetFile);
         const fileName = path.basename(targetFile);
         const fileNameNoExt = path.parse(targetFile).name;
@@ -261,32 +258,40 @@ async function execute(mode: 'run' | 'debug') {
             .replace(/\$fileNameWithoutExt/g, fileNameNoExt)
             .replace(/\$fileName/g, fileName);
     } else {
+        // fix PowerShell
+        
+        // 如果字符串含空格，加引号
         const quote = (s: string) => s.includes(' ') ? `"${s}"` : s;
-        finalCommand = `${quote(executor || "")} ${quote(targetFile)} ${args}`;
+        
+        let execStr = quote(executor || "");
+        const targetStr = quote(targetFile);
+        
+        // 如果是在 Windows 上，并且执行器路径被加了引号（因为有空格），
+        // PowerShell 要求必须在前面加 '& ' 才能执行。
+        if (process.platform === 'win32' && execStr.startsWith('"')) {
+            execStr = `& ${execStr}`;
+        }
+        
+        finalCommand = `${execStr} ${targetStr} ${args}`;
     }
 
-    // terminal
+    // 发送
     if (!activeTerminal || activeTerminal.exitStatus) {
         activeTerminal = vscode.window.createTerminal("Super Runner");
     }
     activeTerminal.show(true);
     
-    // clear
-    const shouldClear = vscode.workspace.getConfiguration('runEntryPoint').get('clearPreviousOutput');
-    
+    const shouldClear = vscode.workspace.getConfiguration('superRunner').get('clearPreviousOutput');
     if (shouldClear) {
         try {
             await vscode.commands.executeCommand('workbench.action.terminal.clear');
-            
-            // wait for clear
+            // 延时等待清屏完成, 没有这行，输出代码会带有大段空白
             await new Promise(resolve => setTimeout(resolve, 200)); 
-        } catch (e) {
-        }
+        } catch (e) {}
     }
 
     activeTerminal.sendText(finalCommand, true);
 }
-
 async function startDebugging(filePath: string, workspaceFolder: vscode.WorkspaceFolder | undefined, args?: string) {
     const ext = path.extname(filePath);
     let debugConfig: vscode.DebugConfiguration;
