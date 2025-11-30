@@ -1,8 +1,8 @@
 {
   "name": "runentrypoint",
   "displayName": "runEntryPoint",
-  "description": "",
-  "version": "0.0.2",
+  "description": "Run entry point in status bar, similar to the way you run your entry point in Pycharm.",
+  "version": "0.0.3",
   "publisher": "DunHou",
   "icon": "runEntryPoint.png",
   "engines": {
@@ -29,7 +29,7 @@
       { "command": "runEntryPoint.editConfig", "title": "Edit Settings" }
     ],
     "configuration": {
-      "title": "Super Runner",
+      "title": "runEntryPoint",
       "properties": {
         "runEntryPoint.clearPreviousOutput": {
           "type": "boolean",
@@ -43,7 +43,6 @@
       }
     }
   },
-
 
 
 

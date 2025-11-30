@@ -45,7 +45,7 @@ function createStatusBarUI() {
     // run
     sbRunBtn = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
     sbRunBtn.text = "$(play)";
-    sbRunBtn.tooltip = "Run (Shift+F10 style)";
+    sbRunBtn.tooltip = "Run Entry Point";
     sbRunBtn.command = 'runEntryPoint.run';
     sbRunBtn.color = "#90ee90";
     sbRunBtn.show();
@@ -53,7 +53,7 @@ function createStatusBarUI() {
     // debug
     sbDebugBtn = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 99);
     sbDebugBtn.text = "$(debug-alt)";
-    sbDebugBtn.tooltip = "Debug (Shift+F9 style)";
+    sbDebugBtn.tooltip = "Debug Entry Point";
     sbDebugBtn.command = 'runEntryPoint.debug';
     sbDebugBtn.color = "#FFB366";
     sbDebugBtn.show();
@@ -277,11 +277,11 @@ async function execute(mode: 'run' | 'debug') {
 
     // 发送
     if (!activeTerminal || activeTerminal.exitStatus) {
-        activeTerminal = vscode.window.createTerminal("Super Runner");
+        activeTerminal = vscode.window.createTerminal("runEntryPoint");
     }
     activeTerminal.show(true);
     
-    const shouldClear = vscode.workspace.getConfiguration('superRunner').get('clearPreviousOutput');
+    const shouldClear = vscode.workspace.getConfiguration('runEntryPoint').get('clearPreviousOutput');
     if (shouldClear) {
         try {
             await vscode.commands.executeCommand('workbench.action.terminal.clear');
@@ -299,7 +299,7 @@ async function startDebugging(filePath: string, workspaceFolder: vscode.Workspac
     if (ext === '.py') {
         debugConfig = {
             type: 'python',
-            name: 'Super Debug',
+            name: 'runEntryPoint Debug',
             request: 'launch',
             program: filePath,
             args: args ? args.split(' ') : [],
@@ -308,7 +308,7 @@ async function startDebugging(filePath: string, workspaceFolder: vscode.Workspac
     } else if (ext === '.js' || ext === '.ts') {
         debugConfig = {
             type: 'node',
-            name: 'Super Debug',
+            name: 'runEntryPoint Debug',
             request: 'launch',
             program: filePath,
             args: args ? args.split(' ') : [],
